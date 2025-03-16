@@ -39,7 +39,7 @@ local timerElemental	= mod:NewTimer(14, "TimerElementalActive", 39088, nil, nil,
 local timerElementalCD	= mod:NewTimer(45, "TimerElemental", 39088, nil, nil, 1)--46-57 variation. because of high variation the pre warning special warning not useful, fortunately we can detect spawns with precise timing.
 local timerStrider		= mod:NewTimer(63, "TimerStrider", 475, nil, nil, 1)
 local timerNaga			= mod:NewTimer(47.5, "TimerNaga", 2120, nil, nil, 1)
-local timerMindControl  = mod:NewCDTimer(20, 38511, "Next Mind Control", nil, nil, 3)
+local timerMindControl  = mod:NewCDTimer(24, 38511, "Next Mind Control", nil, nil, 3)
 local timerShockBlast   = mod:NewCDTimer(12, 38509, "Next Shock Blast", "Tank|Healer", nil, 3)
 
 mod:AddRangeFrameOption(10, 38280)
@@ -196,7 +196,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		self:UnscheduleMethod("NagaSpawn")
 		self:UnscheduleMethod("StriderSpawn")
 
-		timerMindControl:Start(13)
+		timerMindControl:Start(15)
 		timerShockBlast:Start(12)
 --		if IsInGroup() and self.Options.AutoChangeLootToFFA and DBM:GetRaidRank() == 2 then
 --			if masterlooterRaidID then
