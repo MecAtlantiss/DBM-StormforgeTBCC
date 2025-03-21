@@ -10,7 +10,7 @@ mod:SetUsedIcons(1)
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_AURA_APPLIED 38280 38575",
+	"SPELL_AURA_APPLIED 38280 38575 38316",
 	"SPELL_AURA_REMOVED 38280 38132 38112",
 	"SPELL_CAST_START 38253",
 	"SPELL_CAST_SUCCESS 38316 38511 38509",
@@ -39,8 +39,11 @@ local timerElemental	= mod:NewTimer(14, "TimerElementalActive", 39088, nil, nil,
 local timerElementalCD	= mod:NewTimer(45, "TimerElemental", 39088, nil, nil, 1)--46-57 variation. because of high variation the pre warning special warning not useful, fortunately we can detect spawns with precise timing.
 local timerStrider		= mod:NewTimer(63, "TimerStrider", 475, nil, nil, 1)
 local timerNaga			= mod:NewTimer(47.5, "TimerNaga", 2120, nil, nil, 1)
-local timerMindControl  = mod:NewCDTimer(24, 38511, "Next Mind Control", nil, nil, 3)
+local timerEntangle  	= mod:NewCDTimer(18, 38316, "Next Entangle", nil, nil, 3)
+local timerMindControl  = mod:NewCDTimer(21, 38511, "Next Mind Control", nil, nil, 3)
 local timerShockBlast   = mod:NewCDTimer(12, 38509, "Next Shock Blast", "Tank|Healer", nil, 3)
+
+local berserkTimer		= mod:NewBerserkTimer(240)
 
 mod:AddRangeFrameOption(10, 38280)
 mod:AddSetIconOption("ChargeIcon", 38280, false, false, {1})
@@ -76,6 +79,7 @@ function mod:OnCombatStart(delay)
 	self.vb.elementalCount = 1
 
 	timerShockBlast:Start(12-delay)
+	timerEntangle:Start(16-delay)
 --	if IsInGroup() and DBM:GetRaidRank() == 2 then
 --		lootmethod, _, masterlooterRaidID = GetLootMethod()
 --	end
@@ -113,6 +117,8 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif args.spellId == 38575 and args:IsPlayer() and self:AntiSpam() then
 		specWarnToxic:Show()
 		specWarnToxic:Play("runaway")
+	elseif args.spellId == 38316 then
+		timerEntangle:Start()
 	end
 end
 
@@ -181,6 +187,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		warnStrider:Schedule(57, tostring(self.vb.striderCount))
 		self:ScheduleMethod(63, "StriderSpawn")
 		timerShockBlast:Stop()
+		timerEntangle:Stop()
 --		if IsInGroup() and self.Options.AutoChangeLootToFFA and DBM:GetRaidRank() == 2 then
 --			SetLootMethod("freeforall")
 --		end
@@ -196,8 +203,10 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		self:UnscheduleMethod("NagaSpawn")
 		self:UnscheduleMethod("StriderSpawn")
 
-		timerMindControl:Start(15)
+		timerMindControl:Start(14)
 		timerShockBlast:Start(12)
+		timerEntangle:Start()
+		berserkTimer:Start()
 --		if IsInGroup() and self.Options.AutoChangeLootToFFA and DBM:GetRaidRank() == 2 then
 --			if masterlooterRaidID then
 --				SetLootMethod(lootmethod, "raid"..masterlooterRaidID)
