@@ -68,7 +68,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 	if msg == L.DBM_MAG_YELL_PHASE2 or msg:find(L.DBM_MAG_YELL_PHASE2) then
 		self:SetStage(2)
 		warnPhase2:Show()
-		timerBlastNovaCD:Start(nil, self.vb.blastNovaCounter)
+		timerBlastNovaCD:Start(54, self.vb.blastNovaCounter)
 		timerQuake:Start(30)
 		timerPhase2:Cancel()
 	elseif msg == L.DBM_MAG_YELL_PHASE3 or msg:find(L.DBM_MAG_YELL_PHASE3) then
