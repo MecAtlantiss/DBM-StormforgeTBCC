@@ -21,11 +21,6 @@ mod:RegisterEventsInCombat(
 	"UNIT_DIED"
 )
 
---Parasites in phase 1? if so range frame needs to be more phases
---TODO, flame crash timer 26?
---TODO, phase 4 log where I don't overkill boss too fast.
---TODO, add shear warning (defensive) to prevent application all together, taunt swap if it does get applied
---TODO, fire for elementals added to GTFO
 local warnParasite			= mod:NewTargetAnnounce(41917, 3)
 local warnDrawSoul			= mod:NewSpellAnnounce(40904, 3, nil, "Tank", 2)--Needed?
 local warnPhase2Soon		= mod:NewPrePhaseAnnounce(2, 3)
@@ -51,9 +46,9 @@ local specWarnGTFO			= mod:NewSpecialWarningGTFO(40841, nil, nil, nil, 1, 2)
 
 local timerParasite			= mod:NewTargetTimer(10, 41917, nil, false, nil, 1, nil, DBM_CORE_L.DAMAGE_ICON)
 local timerBarrage			= mod:NewTargetTimer(10, 40585, nil, false, nil, 3)
-local timerNextBarrage		= mod:NewCDTimer(55, 40585, nil, nil, nil, 3) --55?
+local timerNextBarrage		= mod:NewCDTimer(44, 40585, nil, nil, nil, 3) --55?
 --local timerFlame			= mod:NewTargetTimer(60, 40932)
-local timerNextFlameBurst	= mod:NewCDTimer(20, 41131, nil, nil, nil, 3)
+local timerNextFlameBurst	= mod:NewCDTimer(21, 41131, nil, nil, nil, 3)
 local timerShadowDemon		= mod:NewCDTimer(34, 41117, nil, nil, nil, 1, nil, DBM_CORE_L.DAMAGE_ICON)
 local timerNextHuman		= mod:NewTimer(74, "TimerNextHuman", 97061, nil, nil, 6)
 local timerNextDemon		= mod:NewTimer(60, "TimerNextDemon", 40506, nil, nil, 6)
@@ -168,7 +163,7 @@ function mod:SPELL_CAST_START(args)
 		self.vb.flamesDown = 0
 		self.vb.warned_preP2 = true
 		warnPhase2:Show()
-		timerNextBarrage:Start(20)
+		timerNextBarrage:Start()
 	end
 end
 
@@ -229,7 +224,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		self.vb.flameBursts = 0
 		warnDemon:Show()
 		timerNextHuman:Start()
-		timerNextFlameBurst:Start()
+		timerNextFlameBurst:Start(18)
 		timerShadowDemon:Start()
 		self:Schedule(74, humanForms, self)
 	elseif (msg == L.Phase4 or msg:find(L.Phase4)) and self.vb.phase < 4 then
