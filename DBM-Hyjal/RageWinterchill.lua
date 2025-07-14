@@ -12,7 +12,8 @@ mod:RegisterCombat("combat")
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 31249 31258",
 	"SPELL_AURA_REMOVED 31249",
-	"SPELL_CAST_START 31258"
+	"SPELL_CAST_START 31258",
+	"SPELL_CAST_SUCCESS 31249"
 )
 
 local warnIceBolt		= mod:NewSpellAnnounce(31249, 3)
@@ -32,7 +33,7 @@ function mod:OnCombatStart(delay)
 	timerDndCD:Start(37-delay)
 end
 
-function mod:SPELL_AURA_APPLIED(args)
+function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 31249 then
 		if args:IsPlayer() then
 			specWarnIceBolt:Show()
@@ -43,7 +44,22 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.IceBoltIcon then
 			self:SetIcon(args.destName, 8)
 		end
-	elseif args.spellId == 31258 and args:IsPlayer() and self:AntiSpam() then
+	end
+end
+
+function mod:SPELL_AURA_APPLIED(args)
+	--if args.spellId == 31249 then
+	--	if args:IsPlayer() then
+	--		specWarnIceBolt:Show()
+	--		specWarnIceBolt:Play("stunsoon")
+	--	else
+	--		warnIceBolt:Show(args.destName)
+	--	end
+	--	if self.Options.IceBoltIcon then
+	--		self:SetIcon(args.destName, 8)
+	--	end
+	--end
+	if args.spellId == 31258 and args:IsPlayer() and self:AntiSpam() then
 		specWarnDnD:Show(args.spellName)
 		specWarnDnD:Play("watchfeet")
 	end
