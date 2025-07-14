@@ -50,7 +50,7 @@ end
 
 function mod:OnCombatEnd(wipe)
 	if wipe then
-		DBM:CreatePizzaTimer(292, "Respawn", false)
+		DBM:CreatePizzaTimer(52, "Respawn", false)
 	end
 end
 
