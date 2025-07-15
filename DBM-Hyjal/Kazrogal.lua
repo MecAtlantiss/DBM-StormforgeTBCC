@@ -9,14 +9,15 @@ mod:SetModelID(17886)
 mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
-	"SPELL_CAST_START 31447"
-	--"SPELL_CAST_SUCCESS 31480"
+	"SPELL_CAST_START 31447",
+	"SPELL_CAST_SUCCESS 31480"
 )
 
 local warnMark		= mod:NewCountAnnounce(31447, 3)
 --local warnStomp		= mod:NewSpellAnnounce(31480, 2)
 
 local timerMarkCD	= mod:NewNextCountTimer(38, 31447, nil, nil, nil, 2)
+local timerStompCD	= mod:NewNextCountTimer(20, 31480, nil, nil, nil, 2)
 
 mod.vb.count = 0
 mod.vb.time = 38
@@ -36,8 +37,9 @@ function mod:SPELL_CAST_START(args)
 	end
 end
 
---function mod:SPELL_CAST_SUCCESS(args)
---	if args.spellId == 31480 then
---		warnStomp:Show()
---	end
---end
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 31480 then
+		--warnStomp:Show()
+		timerStompCD:Start()
+	end
+end
