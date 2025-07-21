@@ -84,6 +84,10 @@ L:SetGeneralLocalization{
 	name = "Gurtogg Siedeblut"
 }
 
+L:SetMiscLocalization{
+	Pull            = "Horde... wird Euch zerschmettern."
+}
+
 --------------------------
 --  Essence Of Souls  --
 --------------------------
