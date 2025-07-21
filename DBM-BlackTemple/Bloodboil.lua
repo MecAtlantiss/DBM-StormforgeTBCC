@@ -6,7 +6,7 @@ mod:SetCreatureID(22948)
 mod:SetEncounterID(605, 2477)
 mod:SetModelID(21443)
 
-mod:RegisterCombat("combat")
+mod:RegisterCombat("yell", L.Pull)
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_SUCCESS 42005",
@@ -30,7 +30,7 @@ local yellRage			= mod:NewYell(40604)
 
 local timerBlood		= mod:NewCDTimer(10, 42005, nil, nil, nil, 5)--10-12. Most of time it's 11 but I have seen as low as 10.1
 local timerStrikeCD		= mod:NewCDTimer(32, 40491, nil, "Tank", 2, 5, nil, DBM_CORE_L.TANK_ICON)--25-82? Is this even a CD timer?
-local timerRageCD		= mod:NewCDTimer(52, 40604, nil, nil, nil, 3)--Verify?
+local timerRageCD		= mod:NewCDTimer(60, 40604, nil, nil, nil, 3)--Verify?
 local timerRageEnd		= mod:NewBuffActiveTimer(28, 40604, nil, nil, nil, 5, nil, DBM_CORE_L.HEALER_ICON)
 
 local berserkTimer		= mod:NewBerserkTimer(450)
