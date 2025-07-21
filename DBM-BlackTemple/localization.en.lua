@@ -100,6 +100,10 @@ L:SetGeneralLocalization{
 	name = "Gurtogg Bloodboil"
 }
 
+L:SetMiscLocalization{
+	Pull            = "Horde will... crush you."
+}
+
 --------------------------
 --  Essence Of Souls  --
 --------------------------
