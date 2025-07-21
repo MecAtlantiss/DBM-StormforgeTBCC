@@ -128,6 +128,7 @@ L:SetOptionLocalization{
 }
 
 L:SetMiscLocalization{
+	Pull            = "Орда тебя… сокрушит."
 }
 
 --------------------------
