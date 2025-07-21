@@ -16,7 +16,7 @@ mod:RegisterEvents(
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 41917 41914 40585 40932 41083 40683 40695",
 	"SPELL_AURA_REMOVED 41917 41914",
-	"SPELL_CAST_START 40904 41117 39849",
+	"SPELL_CAST_START 40904 41117 39849 40832",
 	"SPELL_CAST_SUCCESS 41126 40647",
 	"UNIT_DIED"
 )
@@ -45,15 +45,17 @@ local specWarnShadowDemon	= mod:NewSpecialWarningSwitch(41117, "Dps", nil, nil, 
 local specWarnGTFO			= mod:NewSpecialWarningGTFO(40841, nil, nil, nil, 1, 2)
 
 local timerParasite			= mod:NewTargetTimer(10, 41917, nil, false, nil, 1, nil, DBM_CORE_L.DAMAGE_ICON)
+local timerFlameCrash		= mod:NewCDTimer(27, 40832, nil, nil, nil, 3)
 local timerBarrage			= mod:NewTargetTimer(10, 40585, nil, false, nil, 3)
-local timerNextBarrage		= mod:NewCDTimer(44, 40585, nil, nil, nil, 3) --55?
---local timerFlame			= mod:NewTargetTimer(60, 40932)
+local timerNextBarrage		= mod:NewCDTimer(48, 40585, nil, nil, nil, 3)
+local timerNextEyeBeam		= mod:NewCDTimer(47, 40018, nil, nil, nil, 3)
+local timerAgonizingFlame	= mod:NewCDTimer(30, 40932, nil, nil, nil, 3)
 local timerNextFlameBurst	= mod:NewCDTimer(21, 41131, nil, nil, nil, 3)
 local timerShadowDemon		= mod:NewCDTimer(34, 41117, nil, nil, nil, 1, nil, DBM_CORE_L.DAMAGE_ICON)
 local timerNextHuman		= mod:NewTimer(74, "TimerNextHuman", 97061, nil, nil, 6)
 local timerNextDemon		= mod:NewTimer(60, "TimerNextDemon", 40506, nil, nil, 6)
 local timerEnrage			= mod:NewBuffActiveTimer(10, 40683)
-local timerNextEnrage		= mod:NewCDTimer(40, 40683)
+local timerNextEnrage		= mod:NewCDTimer(49, 40683)
 local timerCaged			= mod:NewBuffActiveTimer(15, 40695, nil, nil, nil, 6)
 local timerPhase4			= mod:NewPhaseTimer(30)
 
@@ -72,8 +74,10 @@ local function humanForms(self)
 	warnHuman:Show()
 	timerNextFlameBurst:Cancel()
 	timerNextDemon:Start()
+	timerAgonizingFlame:Start()
+	timerFlameCrash:Start(36)
 	if self.vb.phase == 4 then
-		timerEnrage:Start()
+		timerNextEnrage:Start() --unsure if this belongs here...
 	end
 end
 
@@ -84,6 +88,7 @@ function mod:OnCombatStart(delay)
 	self.vb.warned_preP2 = false
 	self.vb.warned_preP4 = false
 	berserkTimer:Start(-delay)
+	timerFlameCrash:Start(-delay)
 	if not self:IsTrivial() then
 		self:RegisterShortTermEvents(
 			"SPELL_DAMAGE 40841",
@@ -126,7 +131,6 @@ function mod:SPELL_AURA_APPLIED(args)
 		end
 	elseif spellId == 40932 then
 		warnFlame:CombinedShow(0.3, args.destName)
-		--timerFlame:Start(args.destName)
 	elseif spellId == 41083 then
 		warnShadowDemon:CombinedShow(1, args.destName)
 	elseif spellId == 40683 then
@@ -163,7 +167,11 @@ function mod:SPELL_CAST_START(args)
 		self.vb.flamesDown = 0
 		self.vb.warned_preP2 = true
 		warnPhase2:Show()
-		timerNextBarrage:Start()
+		timerFlameCrash:Cancel()
+		timerNextBarrage:Start(37)
+		timerNextEyeBeam:Start(18)
+	elseif spellId == 40832 then --Flame Crash
+		timerFlameCrash:Start()
 	end
 end
 
@@ -176,18 +184,23 @@ function mod:SPELL_CAST_SUCCESS(args)
 			timerNextFlameBurst:Start()
 		end
 	elseif spellId == 40647 and self.vb.phase < 4 then
+		--SHADOW PRISON 30s MINI-PHASE
 		self:SetStage(4)
 		self.vb.warned_preP4 = true
 		self:Unschedule(humanForms)
 		timerParasite:Cancel()
-		--timerFlame:Cancel()
+		timerAgonizingFlame:Cancel()
+		timerFlameCrash:Cancel()
 		timerNextFlameBurst:Cancel()
 		timerShadowDemon:Cancel()
 		timerNextHuman:Cancel()
 		timerNextDemon:Cancel()
 		timerPhase4:Start()
 		warnPhase4:Schedule(30)
-		timerNextDemon:Start(92)--Verify timer with this trigger, I keep overkilling boss :\
+		timerAgonizingFlame:Start(57)
+		timerFlameCrash:Start(62)
+		timerNextEnrage:Start(75)
+		timerNextDemon:Start(92)
 	end
 end
 
@@ -209,8 +222,11 @@ function mod:UNIT_DIED(args)
 				DBM.RangeCheck:Show(6)
 			end
 			timerNextBarrage:Cancel()
+			timerNextEyeBeam:Cancel()
 			warnPhase3:Show()
 			timerNextDemon:Start(76)
+			timerFlameCrash:Start(43)
+			timerAgonizingFlame:Start(36)
 		end
 	end
 end
@@ -220,10 +236,14 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		timerCombatStart:Start()
 	elseif msg == L.Eyebeam or msg:find(L.Eyebeam) then
 		warnEyebeam:Show()
+		timerNextEyeBeam:Start()
 	elseif msg == L.Demon or msg:find(L.Demon) then
 		self.vb.flameBursts = 0
 		warnDemon:Show()
 		timerNextHuman:Start()
+		timerAgonizingFlame:Cancel()
+		timerFlameCrash:Cancel()
+		timerNextEnrage:Cancel()
 		timerNextFlameBurst:Start(18)
 		timerShadowDemon:Start()
 		self:Schedule(74, humanForms, self)
@@ -232,13 +252,17 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		self.vb.warned_preP4 = true
 		self:Unschedule(humanForms)
 		timerParasite:Cancel()
-		--timerFlame:Cancel()
+		timerAgonizingFlame:Cancel()
+		timerFlameCrash:Cancel()
 		timerNextFlameBurst:Cancel()
 		timerShadowDemon:Cancel()
 		timerNextHuman:Cancel()
 		timerNextDemon:Cancel()
 		timerPhase4:Start()
 		warnPhase4:Schedule(30)
+		timerAgonizingFlame:Start(57)
+		timerFlameCrash:Start(62)
+		timerNextEnrage:Start(75)
 		timerNextDemon:Start(92)--Verify timer with this trigger, I keep overkilling boss :\
 	end
 end
