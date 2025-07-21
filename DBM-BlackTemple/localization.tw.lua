@@ -80,6 +80,10 @@ L:SetGeneralLocalization{
 	name = "葛塔格·血沸"
 }
 
+L:SetMiscLocalization{
+	Pull            = "部落會……毀滅你們。"
+}
+
 --------------------------
 --  Essence Of Souls  --
 --------------------------
