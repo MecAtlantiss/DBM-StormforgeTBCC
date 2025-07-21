@@ -8,6 +8,7 @@ mod:SetModelID(21483)
 mod:SetUsedIcons(4, 5, 6, 7, 8)
 
 mod:RegisterCombat("yell", L.Pull)
+mod:SetWipeTime(50)
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 41305 41431 41376 41303 41294 41410",
