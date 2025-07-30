@@ -29,7 +29,8 @@ local specWarnConsecration	= mod:NewSpecialWarningMove(41541, nil, nil, nil, 1, 
 local specWarnCoH			= mod:NewSpecialWarningInterrupt(41455, "HasInterrupt", nil, 2, 1, 2)
 local specWarnImmune		= mod:NewSpecialWarning("Immune", false)
 
-local timerVanish			= mod:NewBuffActiveTimer(31, 41476, nil, nil, nil, 6)
+--local timerVanish			= mod:NewBuffActiveTimer(31, 41476, nil, nil, nil, 6)
+local timerVanish			= mod:NewTimer(31, "Vanish Ends", 41476, nil, "Show timer for when Vanish ends")
 local timerShield			= mod:NewBuffActiveTimer(20, 41475, nil, nil, nil, 5, nil, DBM_CORE_L.HEALER_ICON..DBM_CORE_L.DAMAGE_ICON)
 local timerMeleeImmune		= mod:NewTargetTimer(15, 41450, nil, "Physical", 2, 5, nil, DBM_CORE_L.DAMAGE_ICON)
 local timerSpellImmune		= mod:NewTargetTimer(15, 41451, nil, "-Physical", 2, 5, nil, DBM_CORE_L.DAMAGE_ICON)
@@ -109,8 +110,8 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 41455 then
 		timerNextCoH:Start(13.3)
-	elseif spellId == 41476 then
-		warnVanish:Show(args.destName)
-		timerVanish:Start(args.destName)
+	elseif args.spellId == 41476 then
+		warnVanish:Show()
+		timerVanish:Start()
 	end
 end
