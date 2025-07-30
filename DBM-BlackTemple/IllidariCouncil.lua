@@ -11,7 +11,7 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_CAST_START 41455 41481",
-	"SPELL_CAST_SUCCESS 41455",
+	"SPELL_CAST_SUCCESS 41455 41476",
 	"SPELL_AURA_APPLIED 41485 41481 41482 41541 41476 41475 41452 41453 41450 41451",
 	"SPELL_AURA_REMOVED 41479 41485"
 )
@@ -62,9 +62,9 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif spellId == 41541 and args:IsPlayer() and self:AntiSpam(3, 3) and not self:IsTrivial() then
 		 specWarnConsecration:Show()
 		 specWarnConsecration:Play("runaway")
-	elseif spellId == 41476 then
-		warnVanish:Show(args.destName)
-		timerVanish:Start(args.destName)
+	--elseif spellId == 41476 then
+	--	warnVanish:Show(args.destName)
+	--	timerVanish:Start(args.destName)
 	elseif spellId == 41475 and not self:IsTrivial() then
 		specWarnShield:Show(args.destName)
 		specWarnShield:Play("stopattack")
@@ -109,5 +109,8 @@ end
 function mod:SPELL_CAST_SUCCESS(args)
 	if args.spellId == 41455 then
 		timerNextCoH:Start(13.3)
+	elseif spellId == 41476 then
+		warnVanish:Show(args.destName)
+		timerVanish:Start(args.destName)
 	end
 end
